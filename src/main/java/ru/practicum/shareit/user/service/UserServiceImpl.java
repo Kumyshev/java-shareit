@@ -34,7 +34,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User saveUser(User user) {
-        if (IsSameUser(user) == true)
+        if (isSameUser(user) == true)
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Внутренняя ошибка сервера.");
         return repository.saveUser(user);
     }
@@ -45,7 +45,7 @@ public class UserServiceImpl implements UserService {
         var user = findById(userId);
         var userClone = User.builder().id(userId).name(user.getName()).email(user.getEmail()).build();
         mapper.map(userDto, userClone);
-        if (IsSameUser(userClone) == true)
+        if (isSameUser(userClone) == true)
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Внутренняя ошибка сервера.");
         return repository.saveUser(userClone);
     }
@@ -60,7 +60,7 @@ public class UserServiceImpl implements UserService {
         repository.deleteAll();
     }
 
-    boolean IsSameUser(User verifiableUser) {
+    boolean isSameUser(User verifiableUser) {
         var userList = findAll();
         for (User user : userList) {
             if (user.getEmail().equals(verifiableUser.getEmail()) && user.getId() != verifiableUser.getId())
