@@ -19,4 +19,5 @@ public class Item {
     private String description;
     @NotNull
     private Boolean available;
+    private Long userId;
 }

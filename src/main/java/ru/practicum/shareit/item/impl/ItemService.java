@@ -7,19 +7,13 @@ import ru.practicum.shareit.item.model.Item;
 
 public interface ItemService {
 
-    Collection<Item> findAll();
-
-    Item findById(Long itemId);
+    Item findByItemId(Long itemId);
 
     Collection<Item> findByUserId(Long userId);
 
     Collection<Item> findByText(String text);
 
-    Item saveItem(Item item, Long userId);
+    Item saveItem(Item item);
 
-    Item updateItem(ItemDto itemDto, Long itemId, Long userId);
-
-    void deleteItemById(Long itemId);
-
-    void deleteAll();
+    Item updateItem(ItemDto itemDto, Long itemId);
 }

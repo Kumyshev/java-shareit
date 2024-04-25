@@ -5,15 +5,11 @@ import java.util.Collection;
 import ru.practicum.shareit.item.model.Item;
 
 public interface ItemRepository {
-    Collection<Item> findAll();
 
-    Item findById(Long itemId);
+    Item findByItemId(Long itemId);
 
     Collection<Item> findByUserId(Long userId);
 
-    Item saveItem(Item item, Long userId);
+    Item saveItem(Item item);
 
-    void deleteItemById(Long itemId);
-
-    void deleteAll();
 }

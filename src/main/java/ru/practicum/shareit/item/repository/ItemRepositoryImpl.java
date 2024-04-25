@@ -12,48 +12,38 @@ import ru.practicum.shareit.item.model.Item;
 
 @Component
 public class ItemRepositoryImpl implements ItemRepository {
-    private final Map<Long, Item> items = new HashMap<>();
+    private final Map<Long, Collection<Item>> items = new HashMap<>();
 
     private static Long counter = 1L;
 
-    public Map<Long, Item> itemMap() {
+    public Collection<Item> getItemCollection() {
+        var itemList = items.values().stream().flatMap(s -> s.stream()).toList();
+        return itemList;
+    }
+
+    public Map<Long, Collection<Item>> itemMap() {
         return items;
     }
 
     @Override
-    public Collection<Item> findAll() {
-        return items.values();
-    }
-
-    @Override
-    public Item findById(Long itemId) {
-        var item = items.values().stream().filter(i -> i.getId() == itemId).findAny().orElse(null);
-        return item;
-    }
-
-    @Override
-    public Item saveItem(Item item, Long userId) {
-        if (item.getId() == null)
-            item.setId(counter++);
-        items.put(userId, item);
-        return item;
-    }
-
-    @Override
-    public void deleteItemById(Long itemId) {
-        items.remove(itemId);
-    }
-
-    @Override
-    public void deleteAll() {
-        items.clear();
+    public Item findByItemId(Long itemId) {
+        return getItemCollection().stream().filter(i -> i.getId() == itemId).findAny()
+                .orElse(null);
     }
 
     @Override
     public Collection<Item> findByUserId(Long userId) {
-        Collection<Item> itemList = new ArrayList<>();
-        itemList.add(items.get(userId));
-        return itemList;
+        return items.get(userId);
     }
 
+    @Override
+    public Item saveItem(Item item) {
+        if (item.getId() == null)
+            item.setId(counter++);
+        var userId = item.getUserId();
+        if (!items.containsKey(userId))
+            items.put(userId, new ArrayList<>());
+        items.get(userId).add(item);
+        return item;
+    }
 }

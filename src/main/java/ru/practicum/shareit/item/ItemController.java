@@ -12,7 +12,6 @@ import java.util.Collection;
 
 import javax.validation.Valid;
 
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -38,25 +37,21 @@ public class ItemController {
     }
 
     @GetMapping("{itemId}")
-    public Item findById(@PathVariable("itemId") Long itemId) {
-        return itemService.findById(itemId);
+    public Item findByItemId(@PathVariable("itemId") Long itemId) {
+        return itemService.findByItemId(itemId);
     }
 
     @PostMapping
     public Item saveItem(@Valid @RequestBody Item item,
             @RequestHeader(value = "X-Sharer-User-Id") Long userId) {
-        return itemService.saveItem(item, userId);
+        item.setUserId(userId);
+        return itemService.saveItem(item);
     }
 
     @PatchMapping("/{itemId}")
     public Item updateItem(@Valid @RequestBody ItemDto itemDto, @PathVariable("itemId") Long itemId,
             @RequestHeader(value = "X-Sharer-User-Id") Long userId) {
-        return itemService.updateItem(itemDto, itemId, userId);
+        itemDto.setUserId(userId);
+        return itemService.updateItem(itemDto, itemId);
     }
-
-    @DeleteMapping("/{itemId}")
-    public void deleteItemById(@PathVariable("itemId") Long itemId) {
-        itemService.deleteItemById(itemId);
-    }
-
 }

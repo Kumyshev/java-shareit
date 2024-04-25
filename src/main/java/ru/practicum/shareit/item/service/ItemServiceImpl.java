@@ -24,46 +24,26 @@ public class ItemServiceImpl implements ItemService {
     private final ModelMapper mapper = new ModelMapper();
 
     @Override
-    public Collection<Item> findAll() {
-        return repository.findAll();
+    public Item findByItemId(Long itemId) {
+        return repository.findByItemId(itemId);
     }
 
     @Override
-    public Item findById(Long itemId) {
-        return repository.findById(itemId);
+    public Item saveItem(Item item) {
+        service.findById(item.getUserId());
+        return repository.saveItem(item);
     }
 
     @Override
-    public Item saveItem(Item item, Long userId) {
-        service.findById(userId);
-        return repository.saveItem(item, userId);
-    }
-
-    @Override
-    public Item updateItem(ItemDto itemDto, Long itemId, Long userId) {
+    public Item updateItem(ItemDto itemDto, Long itemId) {
+        var userId = itemDto.getUserId();
         service.findById(userId);
         if (!repository.itemMap().containsKey(userId))
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Пользователь с таким id не найден.");
         mapper.getConfiguration().setSkipNullEnabled(true);
-        var item = findById(itemId);
-        var itemClone = Item.builder()
-                .id(item.getId())
-                .name(item.getName())
-                .description(item.getDescription())
-                .available(item.getAvailable())
-                .build();
-        mapper.map(itemDto, itemClone);
-        return repository.saveItem(itemClone, userId);
-    }
-
-    @Override
-    public void deleteItemById(Long itemId) {
-        repository.deleteItemById(itemId);
-    }
-
-    @Override
-    public void deleteAll() {
-        repository.deleteAll();
+        var item = findByItemId(itemId);
+        mapper.map(itemDto, item);
+        return item;
     }
 
     @Override
@@ -75,7 +55,7 @@ public class ItemServiceImpl implements ItemService {
     public Collection<Item> findByText(String text) {
         if (text.isBlank())
             return new ArrayList<>();
-        return repository.findAll().stream()
+        return repository.getItemCollection().stream()
                 .filter(items -> StringUtils.containsIgnoreCase(items.toString(), text))
                 .filter(items -> items.getAvailable() == true)
                 .toList();
