@@ -63,7 +63,7 @@ public class UserServiceImpl implements UserService {
     boolean isSameUser(User verifiableUser) {
         var userList = findAll();
         for (User user : userList) {
-            if (user.getEmail().equals(verifiableUser.getEmail()) && user.getId() != verifiableUser.getId())
+            if (user.getEmail().equals(verifiableUser.getEmail()) && !user.getId().equals(verifiableUser.getId()))
                 return true;
         }
         return false;
