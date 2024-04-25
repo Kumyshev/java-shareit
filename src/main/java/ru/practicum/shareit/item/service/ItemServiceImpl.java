@@ -2,6 +2,7 @@ package ru.practicum.shareit.item.service;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.modelmapper.ModelMapper;
@@ -58,7 +59,7 @@ public class ItemServiceImpl implements ItemService {
         return repository.getItemCollection().stream()
                 .filter(items -> StringUtils.containsIgnoreCase(items.toString(), text))
                 .filter(items -> items.getAvailable() == true)
-                .toList();
+                .collect(Collectors.toList());
     }
 
 }

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Component;
 
@@ -17,7 +18,7 @@ public class ItemRepositoryImpl implements ItemRepository {
     private static Long counter = 1L;
 
     public Collection<Item> getItemCollection() {
-        var itemList = items.values().stream().flatMap(s -> s.stream()).toList();
+        var itemList = items.values().stream().flatMap(s -> s.stream()).collect(Collectors.toList());
         return itemList;
     }
 
