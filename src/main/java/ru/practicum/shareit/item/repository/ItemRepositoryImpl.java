@@ -28,7 +28,7 @@ public class ItemRepositoryImpl implements ItemRepository {
 
     @Override
     public Item findByItemId(Long itemId) {
-        return getItemCollection().stream().filter(i -> i.getId() == itemId).findAny()
+        return getItemCollection().stream().filter(i -> i.getId().equals(itemId)).findAny()
                 .orElse(null);
     }
 
