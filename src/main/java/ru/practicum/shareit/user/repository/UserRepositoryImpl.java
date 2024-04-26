@@ -15,7 +15,7 @@ import ru.practicum.shareit.user.impl.UserRepository;
 public class UserRepositoryImpl implements UserRepository {
     private final Map<Long, User> users = new HashMap<>();
 
-    private static Long counter = 1L;
+    private static volatile Long counter = 1L;
 
     @Override
     public Collection<User> findAll() {

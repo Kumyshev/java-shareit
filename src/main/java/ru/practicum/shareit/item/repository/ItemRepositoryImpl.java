@@ -20,7 +20,7 @@ public class ItemRepositoryImpl implements ItemRepository {
     private final Map<Long, Item> itemMap = new HashMap<>();
     private final UserRepository userRepository;
 
-    private static Long counter = 1L;
+    private static volatile Long counter = 1L;
 
     @Override
     public Collection<Item> findAll() {
