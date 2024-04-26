@@ -20,7 +20,7 @@ public class ItemRepositoryImpl implements ItemRepository {
     private final Map<Long, Item> itemMap = new HashMap<>();
     private final UserRepository userRepository;
 
-    private static int counter = 1;
+    private Long counter = 1L;
 
     @Override
     public Collection<Item> findAll() {
@@ -40,7 +40,7 @@ public class ItemRepositoryImpl implements ItemRepository {
     @Override
     public Item saveItem(Item item, Long userId) {
         if (item.getId() == null)
-            item.setId(Long.valueOf(counter++));
+            item.setId(counter++);
         var user = userRepository.findById(userId);
         item.setUser(user);
         itemMap.put(item.getId(), item);

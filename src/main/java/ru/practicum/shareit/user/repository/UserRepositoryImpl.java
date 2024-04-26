@@ -15,7 +15,7 @@ import ru.practicum.shareit.user.impl.UserRepository;
 public class UserRepositoryImpl implements UserRepository {
     private final Map<Long, User> users = new HashMap<>();
 
-    private static int counter = 1;
+    private Long counter = 1L;
 
     @Override
     public Collection<User> findAll() {
@@ -34,7 +34,7 @@ public class UserRepositoryImpl implements UserRepository {
     public User saveUser(User user) {
         if (user.getId() == null) {
             var userId = counter++;
-            user.setId(Long.valueOf(userId));
+            user.setId(userId);
         }
         users.put(user.getId(), user);
         return user;
