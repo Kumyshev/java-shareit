@@ -5,60 +5,64 @@ import java.util.Collection;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
-import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import lombok.RequiredArgsConstructor;
 import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.item.dto.ItemUpdateDto;
+import ru.practicum.shareit.item.impl.ItemRepository;
 import ru.practicum.shareit.item.impl.ItemService;
-import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.item.repository.ItemRepositoryImpl;
-import ru.practicum.shareit.user.service.UserServiceImpl;
+import ru.practicum.shareit.item.mapper.ItemMapper;
+import ru.practicum.shareit.user.impl.UserRepository;
 
 @Service
 @RequiredArgsConstructor
 public class ItemServiceImpl implements ItemService {
-    private final ItemRepositoryImpl repository;
-    private final UserServiceImpl service;
-    private final ModelMapper mapper = new ModelMapper();
+    private final ItemRepository itemRepository;
+    private final UserRepository userRepository;
+    private final ItemMapper itemMapper;
 
     @Override
-    public Item findByItemId(Long itemId) {
-        return repository.findByItemId(itemId);
+    public ItemDto findByItemId(Long itemId) {
+        return itemMapper.toDto(itemRepository.findByItemId(itemId));
     }
 
     @Override
-    public Item saveItem(Item item) {
-        service.findById(item.getUserId());
-        return repository.saveItem(item);
+    public ItemDto saveItem(ItemDto itemDto, Long userId) {
+        userRepository.findById(userId);
+        return itemMapper.toDto(itemRepository.saveItem(itemMapper.toItem(itemDto), userId));
     }
 
     @Override
-    public Item updateItem(ItemDto itemDto, Long itemId) {
-        var userId = itemDto.getUserId();
-        service.findById(userId);
-        if (!repository.itemMap().containsKey(userId))
+    public ItemDto updateItem(ItemUpdateDto itemUpdateDto, Long itemId, Long userId) {
+        userRepository.findById(userId);
+        var items = itemRepository.findByUserId(userId);
+        if (items == null)
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Пользователь с таким id не найден.");
-        mapper.getConfiguration().setSkipNullEnabled(true);
-        var item = findByItemId(itemId);
-        mapper.map(itemDto, item);
-        return item;
+        var item = itemRepository.findByItemId(itemId);
+        if (!items.contains(item))
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Доступ запрещён.");
+        itemMapper.toUpdateItem(itemUpdateDto, item);
+        return itemMapper.toDto(item);
     }
 
     @Override
-    public Collection<Item> findByUserId(Long userId) {
-        return repository.findByUserId(userId);
+    public Collection<ItemDto> findByUserId(Long userId) {
+        return itemRepository.findByUserId(userId).stream()
+                .map(itemMapper::toDto)
+                .collect(Collectors.toList());
     }
 
     @Override
-    public Collection<Item> findByText(String text) {
+    public Collection<ItemDto> findByText(String text) {
         if (text.isBlank())
             return new ArrayList<>();
-        return repository.getItemCollection().stream()
-                .filter(items -> StringUtils.containsIgnoreCase(items.toString(), text))
-                .filter(items -> items.getAvailable() == true)
+        return itemRepository.findAll().stream()
+                .filter(item -> item.getAvailable() == true)
+                .filter(item -> StringUtils.containsIgnoreCase(item.getName() + " " + item.getDescription(), text))
+                .map(itemMapper::toDto)
                 .collect(Collectors.toList());
     }
 

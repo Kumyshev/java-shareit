@@ -4,7 +4,10 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
+import org.springframework.web.server.ResponseStatusException;
+
 import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.impl.UserRepository;
 
@@ -22,6 +25,8 @@ public class UserRepositoryImpl implements UserRepository {
     @Override
     public User findById(Long userId) {
         var user = users.get(userId);
+        if (user == null)
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Пользователь с таким id не найден.");
         return user;
     }
 

@@ -6,10 +6,13 @@ import javax.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+import ru.practicum.shareit.user.User;
 
 @Data
+@Builder
 @AllArgsConstructor
-@Builder(toBuilder = true)
+@NoArgsConstructor
 public class Item {
     private Long id;
     @NotNull
@@ -19,5 +22,5 @@ public class Item {
     private String description;
     @NotNull
     private Boolean available;
-    private Long userId;
+    private User user;
 }
