@@ -12,6 +12,6 @@ public interface ItemRepository {
 
     Collection<Item> findByUserId(Long userId);
 
-    Item saveItem(Item item, Long userId);
+    Item saveItem(Item item);
 
 }

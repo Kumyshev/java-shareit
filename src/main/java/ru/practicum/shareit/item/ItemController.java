@@ -46,7 +46,8 @@ public class ItemController {
     @PostMapping
     public ItemDto saveItem(@Valid @RequestBody ItemDto itemDto,
             @RequestHeader(value = "X-Sharer-User-Id") Long userId) {
-        return itemService.saveItem(itemDto, userId);
+        itemDto.setUserId(userId);
+        return itemService.saveItem(itemDto);
     }
 
     @PatchMapping("/{itemId}")
@@ -54,6 +55,7 @@ public class ItemController {
             @RequestHeader(value = "X-Sharer-User-Id") Long userId) {
         if (itemUpdateDto.getName() != null && itemUpdateDto.getName().isBlank())
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Некорректный запрос.");
-        return itemService.updateItem(itemUpdateDto, itemId, userId);
+        itemUpdateDto.setUserId(userId);
+        return itemService.updateItem(itemUpdateDto, itemId);
     }
 }

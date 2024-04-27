@@ -30,15 +30,17 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public ItemDto saveItem(ItemDto itemDto, Long userId) {
-        userRepository.findById(userId);
-        return itemMapper.toDto(itemRepository.saveItem(itemMapper.toItem(itemDto), userId));
+    public ItemDto saveItem(ItemDto itemDto) {
+        var user = userRepository.findById(itemDto.getUserId());
+        var item = itemMapper.toItem(itemDto);
+        item.setUser(user);
+        return itemMapper.toDto(itemRepository.saveItem(item));
     }
 
     @Override
-    public ItemDto updateItem(ItemUpdateDto itemUpdateDto, Long itemId, Long userId) {
-        userRepository.findById(userId);
-        var items = itemRepository.findByUserId(userId);
+    public ItemDto updateItem(ItemUpdateDto itemUpdateDto, Long itemId) {
+        userRepository.findById(itemUpdateDto.getUserId());
+        var items = itemRepository.findByUserId(itemUpdateDto.getUserId());
         if (items == null)
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Пользователь с таким id не найден.");
         var item = itemRepository.findByItemId(itemId);
@@ -61,7 +63,8 @@ public class ItemServiceImpl implements ItemService {
             return new ArrayList<>();
         return itemRepository.findAll().stream()
                 .filter(item -> item.getAvailable() == true)
-                .filter(item -> StringUtils.containsIgnoreCase(item.getName() + " " + item.getDescription(), text))
+                .filter(item -> StringUtils.containsIgnoreCase(item.getName(), text)
+                        || StringUtils.containsIgnoreCase(item.getDescription(), text))
                 .map(itemMapper::toDto)
                 .collect(Collectors.toList());
     }

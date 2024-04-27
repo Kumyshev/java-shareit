@@ -13,7 +13,7 @@ public interface ItemService {
 
     Collection<ItemDto> findByText(String text);
 
-    ItemDto saveItem(ItemDto itemDto, Long userId);
+    ItemDto saveItem(ItemDto itemDto);
 
-    ItemDto updateItem(ItemUpdateDto itemUpdateDto, Long itemId, Long userId);
+    ItemDto updateItem(ItemUpdateDto itemUpdateDto, Long itemId);
 }

@@ -11,14 +11,12 @@ import org.springframework.stereotype.Component;
 import lombok.RequiredArgsConstructor;
 import ru.practicum.shareit.item.impl.ItemRepository;
 import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.user.impl.UserRepository;
 
 @Component
 @RequiredArgsConstructor
 public class ItemRepositoryImpl implements ItemRepository {
     private final Map<Long, Collection<Item>> itemsMap = new HashMap<>();
     private final Map<Long, Item> itemMap = new HashMap<>();
-    private final UserRepository userRepository;
 
     private Long counter = 1L;
 
@@ -38,13 +36,11 @@ public class ItemRepositoryImpl implements ItemRepository {
     }
 
     @Override
-    public Item saveItem(Item item, Long userId) {
+    public Item saveItem(Item item) {
         if (item.getId() == null)
             item.setId(counter++);
-        var user = userRepository.findById(userId);
-        item.setUser(user);
         itemMap.put(item.getId(), item);
-        itemsMap.computeIfAbsent(userId, k -> new ArrayList<>()).add(item);
+        itemsMap.computeIfAbsent(item.getUser().getId(), k -> new ArrayList<>()).add(item);
         return item;
     }
 }
