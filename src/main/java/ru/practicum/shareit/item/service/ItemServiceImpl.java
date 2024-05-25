@@ -2,6 +2,7 @@ package ru.practicum.shareit.item.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import lombok.RequiredArgsConstructor;
+import ru.practicum.shareit.comment.dto.CommentDto;
 import ru.practicum.shareit.comment.impl.CommentService;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.impl.ItemService;
@@ -20,6 +22,7 @@ import ru.practicum.shareit.item.mapper.ItemMapper;
 import ru.practicum.shareit.item.model.Booking;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.ItemRepository;
+import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 
 @Service
@@ -43,8 +46,8 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public ItemDto postItem(ItemDto itemDto, Long ownerId) {
         try {
-            var item = itemMapper.toItem(itemDto);
-            var user = userRepository.findById(ownerId);
+            Item item = itemMapper.toItem(itemDto);
+            Optional<User> user = userRepository.findById(ownerId);
             item.setOwner(user.get());
             return itemMapper.toItemDto(itemRepository.save(item));
         } catch (Exception e) {
@@ -55,7 +58,7 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public ItemDto patchItem(ItemDto itemDto, Long ownerId, Long itemId) {
         try {
-            var item = itemRepository.findItemByIdAndOwnerId(itemId, ownerId);
+            Item item = itemRepository.findItemByIdAndOwnerId(itemId, ownerId);
             item = itemMapper.toUpdateItem(item, itemDto);
             return itemMapper.toItemDto(itemRepository.save(item));
         } catch (Exception e) {
@@ -65,7 +68,7 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public ItemDto getItem(Long userId, Long itemId) {
-        var data = commentService.getComment(userId, itemId);
+        List<CommentDto> data = commentService.getComment(userId, itemId);
         try {
             var item = itemRepository.findItemByIdAndOwnerId(itemId, userId);
             var itemDto = itemMapper.toItemDto(item);
@@ -81,7 +84,7 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public List<ItemDto> getItems(Long ownerId) {
-        var items = itemRepository.findAllOwnerItems(ownerId)
+        List<ItemDto> items = itemRepository.findAllOwnerItems(ownerId)
                 .stream()
                 .map(itemMapper::toItemDto)
                 .collect(Collectors.toList());
@@ -108,7 +111,7 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public Item findItem(Long itemId) {
         try {
-            var item = itemRepository.findById(itemId);
+            Optional<Item> item = itemRepository.findById(itemId);
             return item.get();
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);

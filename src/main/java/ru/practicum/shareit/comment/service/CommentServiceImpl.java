@@ -16,6 +16,7 @@ import ru.practicum.shareit.booking.Booking;
 import ru.practicum.shareit.comment.dto.CommentDto;
 import ru.practicum.shareit.comment.impl.CommentService;
 import ru.practicum.shareit.comment.mapper.CommentMapper;
+import ru.practicum.shareit.comment.model.Comment;
 import ru.practicum.shareit.comment.repository.CommentRepository;
 
 @Service
@@ -33,9 +34,9 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public CommentDto postComment(Long userId, Long itemId, CommentDto commentDto) {
-        var booking = getBookerHasBooking(userId, itemId);
+        Booking booking = getBookerHasBooking(userId, itemId);
         if (booking != null) {
-            var comment = commentMapper.toComment(commentDto);
+            Comment comment = commentMapper.toComment(commentDto);
             comment.setAuthor(booking.getBooker());
             comment.setItem(booking.getItem());
             return commentMapper.toCommentDto(commentRepository.save(comment));

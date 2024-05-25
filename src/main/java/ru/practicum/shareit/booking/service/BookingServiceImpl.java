@@ -17,6 +17,8 @@ import ru.practicum.shareit.booking.impl.BookingService;
 import ru.practicum.shareit.booking.mapper.BookingMapper;
 import ru.practicum.shareit.booking.repository.BookingRepository;
 import ru.practicum.shareit.item.impl.ItemService;
+import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.impl.UserService;
 
 @Service
@@ -37,14 +39,14 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public BookingDto postBooking(Long userId, BookingDto bookingDto) {
-        var user = userService.findUser(userId);
-        var item = itemService.findItem(bookingDto.getItemId());
+        User user = userService.findUser(userId);
+        Item item = itemService.findItem(bookingDto.getItemId());
         if (item.getOwner().getId() == user.getId())
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         if (!item.getAvailable() || bookingDto.getEnd().isBefore(bookingDto.getStart())
                 || bookingDto.getEnd().equals(bookingDto.getStart()))
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
-        var booking = bookingMapper.toBooking(bookingDto);
+        Booking booking = bookingMapper.toBooking(bookingDto);
         booking.setItem(item);
         booking.setBooker(user);
         booking.setStatus(Status.WAITING);
@@ -53,7 +55,7 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public BookingDto patchBooking(Long userId, Long bookingId, boolean approved) {
-        var booking = bookingRepository.findByOwner(userId, bookingId)
+        Booking booking = bookingRepository.findByOwner(userId, bookingId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         if (booking.getStatus().equals(Status.APPROVED))
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
@@ -77,7 +79,7 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public List<BookingDto> getUserBookings(Long userId) {
-        var bookings = bookingRepository.findUserBookings(userId)
+        List<Booking> bookings = bookingRepository.findUserBookings(userId)
                 .filter(b -> !b.isEmpty())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
@@ -88,7 +90,7 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public List<BookingDto> getOwnerBookings(Long ownerId) {
-        var bookings = bookingRepository.findOwnerBookings(ownerId)
+        List<Booking> bookings = bookingRepository.findOwnerBookings(ownerId)
                 .filter(b -> !b.isEmpty())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
