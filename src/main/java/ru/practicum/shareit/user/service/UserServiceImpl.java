@@ -1,6 +1,7 @@
 package ru.practicum.shareit.user.service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +31,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto patchUser(UserDto userDto, Long userId) {
-        var user = userRepository.findUserById(userId);
+        User user = userRepository.findUserById(userId);
         return userMapper.toUserDto(userRepository.save(userMapper.toUpdateUser(user, userDto)));
     }
 
@@ -59,7 +60,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public User findUser(Long userId) {
         try {
-            var user = userRepository.findById(userId);
+            Optional<User> user = userRepository.findById(userId);
             return user.get();
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
