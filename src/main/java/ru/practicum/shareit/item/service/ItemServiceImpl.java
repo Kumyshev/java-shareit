@@ -70,8 +70,8 @@ public class ItemServiceImpl implements ItemService {
     public ItemDto getItem(Long userId, Long itemId) {
         List<CommentDto> data = commentService.getComment(userId, itemId);
         try {
-            var item = itemRepository.findItemByIdAndOwnerId(itemId, userId);
-            var itemDto = itemMapper.toItemDto(item);
+            Item item = itemRepository.findItemByIdAndOwnerId(itemId, userId);
+            ItemDto itemDto = itemMapper.toItemDto(item);
             itemDto.setLastBooking(getLastBooking(userId, itemId));
             itemDto.setNextBooking(getNextBooking(userId, itemId));
             itemDto.setComments(data);
