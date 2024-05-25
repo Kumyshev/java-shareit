@@ -41,7 +41,7 @@ public class BookingServiceImpl implements BookingService {
     public BookingDto postBooking(Long userId, BookingDto bookingDto) {
         User user = userService.findUser(userId);
         Item item = itemService.findItem(bookingDto.getItemId());
-        if (item.getOwner().getId() == user.getId())
+        if (item.getOwner().getId().equals(user.getId()))
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         if (!item.getAvailable() || bookingDto.getEnd().isBefore(bookingDto.getStart())
                 || bookingDto.getEnd().equals(bookingDto.getStart()))
