@@ -1,72 +1,146 @@
 package ru.practicum.shareit.item.service;
 
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.List;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.StringUtils;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import lombok.RequiredArgsConstructor;
+import ru.practicum.shareit.comment.impl.CommentService;
 import ru.practicum.shareit.item.dto.ItemDto;
-import ru.practicum.shareit.item.dto.ItemUpdateDto;
-import ru.practicum.shareit.item.impl.ItemRepository;
 import ru.practicum.shareit.item.impl.ItemService;
 import ru.practicum.shareit.item.mapper.ItemMapper;
-import ru.practicum.shareit.user.impl.UserRepository;
+import ru.practicum.shareit.item.model.Booking;
+import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.item.repository.ItemRepository;
+import ru.practicum.shareit.user.repository.UserRepository;
 
 @Service
 @RequiredArgsConstructor
 public class ItemServiceImpl implements ItemService {
+    @Autowired
     private final ItemRepository itemRepository;
-    private final UserRepository userRepository;
+
+    @Autowired
     private final ItemMapper itemMapper;
 
+    @Autowired
+    private final UserRepository userRepository;
+
+    @PersistenceContext
+    private EntityManager entityManager;
+
+    @Autowired
+    private final CommentService commentService;
+
     @Override
-    public ItemDto findByItemId(Long itemId) {
-        return itemMapper.toDto(itemRepository.findByItemId(itemId));
+    public ItemDto postItem(ItemDto itemDto, Long ownerId) {
+        try {
+            var item = itemMapper.toItem(itemDto);
+            var user = userRepository.findById(ownerId);
+            item.setOwner(user.get());
+            return itemMapper.toItemDto(itemRepository.save(item));
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        }
     }
 
     @Override
-    public ItemDto saveItem(ItemDto itemDto) {
-        var user = userRepository.findById(itemDto.getUserId());
-        var item = itemMapper.toItem(itemDto);
-        item.setUser(user);
-        return itemMapper.toDto(itemRepository.saveItem(item));
+    public ItemDto patchItem(ItemDto itemDto, Long ownerId, Long itemId) {
+        try {
+            var item = itemRepository.findItemByIdAndOwnerId(itemId, ownerId);
+            item = itemMapper.toUpdateItem(item, itemDto);
+            return itemMapper.toItemDto(itemRepository.save(item));
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        }
     }
 
     @Override
-    public ItemDto updateItem(ItemUpdateDto itemUpdateDto, Long itemId) {
-        userRepository.findById(itemUpdateDto.getUserId());
-        var items = itemRepository.findByUserId(itemUpdateDto.getUserId());
-        if (items == null)
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Пользователь с таким id не найден.");
-        var item = itemRepository.findByItemId(itemId);
-        if (!items.contains(item))
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Доступ запрещён.");
-        itemMapper.toUpdateItem(itemUpdateDto, item);
-        return itemMapper.toDto(item);
+    public ItemDto getItem(Long userId, Long itemId) {
+        var data = commentService.getComment(userId, itemId);
+        try {
+            var item = itemRepository.findItemByIdAndOwnerId(itemId, userId);
+            var itemDto = itemMapper.toItemDto(item);
+            itemDto.setLastBooking(getLastBooking(userId, itemId));
+            itemDto.setNextBooking(getNextBooking(userId, itemId));
+            itemDto.setComments(data);
+            ;
+            return itemDto;
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        }
     }
 
     @Override
-    public Collection<ItemDto> findByUserId(Long userId) {
-        return itemRepository.findByUserId(userId).stream()
-                .map(itemMapper::toDto)
+    public List<ItemDto> getItems(Long ownerId) {
+        var items = itemRepository.findAllOwnerItems(ownerId)
+                .stream()
+                .map(itemMapper::toItemDto)
                 .collect(Collectors.toList());
+
+        for (ItemDto itemDto : items) {
+            itemDto.setNextBooking(getNextBooking(ownerId, itemDto.getId()));
+            itemDto.setLastBooking(getLastBooking(ownerId, itemDto.getId()));
+        }
+
+        return items;
     }
 
     @Override
-    public Collection<ItemDto> findByText(String text) {
-        if (text.isBlank())
+    public List<ItemDto> getItem(String text) {
+        if (text.isEmpty())
             return new ArrayList<>();
-        return itemRepository.findAll().stream()
-                .filter(item -> item.getAvailable() == true)
-                .filter(item -> StringUtils.containsIgnoreCase(item.getName(), text)
-                        || StringUtils.containsIgnoreCase(item.getDescription(), text))
-                .map(itemMapper::toDto)
+        return itemRepository.findItemByText(text)
+                .stream()
+                .filter(i -> i.getAvailable() == true)
+                .map(itemMapper::toItemDto)
                 .collect(Collectors.toList());
     }
 
+    @Override
+    public Item findItem(Long itemId) {
+        try {
+            var item = itemRepository.findById(itemId);
+            return item.get();
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        }
+    }
+
+    Booking getLastBooking(Long userId, Long itemId) {
+        try {
+            return entityManager
+                    .createQuery(
+                            "select new ru.practicum.shareit.item.model.Booking (b.id , b.booker.id) "
+                                    + " from bookings b where b.item.owner.id=?1 and b.item.id=?2 "
+                                    + " and b.start <= current_timestamp order by b.start desc",
+                            Booking.class)
+                    .setParameter(1, userId).setParameter(2, itemId).setMaxResults(1).getSingleResult();
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    Booking getNextBooking(Long userId, Long itemId) {
+        try {
+            return entityManager
+                    .createQuery(
+                            "select new ru.practicum.shareit.item.model.Booking (b.id , b.booker.id) "
+                                    + " from bookings b where b.item.owner.id=?1 and b.item.id=?2 "
+                                    + " and b.status like '%APPROVED%'"
+                                    + " and b.start > current_timestamp order by b.start asc",
+                            Booking.class)
+                    .setParameter(1, userId).setParameter(2, itemId).setMaxResults(1).getSingleResult();
+        } catch (Exception e) {
+            return null;
+        }
+    }
 }
