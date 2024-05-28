@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import ru.practicum.shareit.item.model.Item;
 
-public interface ItemRepository extends JpaRepository<Item, Long> {
+public interface ItemRepository extends JpaRepository<Item, Long>, BookingInfo {
 
     @Query(value = "select i from items i, users u where i.id=?1 and u.id=?2")
     public Item findItemByIdAndOwnerId(Long itemId, Long ownerId);

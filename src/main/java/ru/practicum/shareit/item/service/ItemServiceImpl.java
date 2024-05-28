@@ -5,9 +5,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -18,7 +15,6 @@ import ru.practicum.shareit.comment.impl.CommentService;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.impl.ItemService;
 import ru.practicum.shareit.item.mapper.ItemMapper;
-import ru.practicum.shareit.item.model.Booking;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.user.User;
@@ -33,9 +29,6 @@ public class ItemServiceImpl implements ItemService {
     private final ItemMapper itemMapper;
 
     private final UserRepository userRepository;
-
-    @PersistenceContext
-    private EntityManager entityManager;
 
     private final CommentService commentService;
 
@@ -68,8 +61,8 @@ public class ItemServiceImpl implements ItemService {
         try {
             Item item = itemRepository.findItemByIdAndOwnerId(itemId, userId);
             ItemDto itemDto = itemMapper.toItemDto(item);
-            itemDto.setLastBooking(getLastBooking(userId, itemId));
-            itemDto.setNextBooking(getNextBooking(userId, itemId));
+            itemDto.setLastBooking(itemRepository.findLastBooking(userId, itemId));
+            itemDto.setNextBooking(itemRepository.findNextBooking(userId, itemId));
             itemDto.setComments(data);
             ;
             return itemDto;
@@ -86,8 +79,8 @@ public class ItemServiceImpl implements ItemService {
                 .collect(Collectors.toList());
 
         for (ItemDto itemDto : items) {
-            itemDto.setNextBooking(getNextBooking(ownerId, itemDto.getId()));
-            itemDto.setLastBooking(getLastBooking(ownerId, itemDto.getId()));
+            itemDto.setNextBooking(itemRepository.findNextBooking(ownerId, itemDto.getId()));
+            itemDto.setLastBooking(itemRepository.findLastBooking(ownerId, itemDto.getId()));
         }
 
         return items;
@@ -111,35 +104,6 @@ public class ItemServiceImpl implements ItemService {
             return item.get();
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
-        }
-    }
-
-    Booking getLastBooking(Long userId, Long itemId) {
-        try {
-            return entityManager
-                    .createQuery(
-                            "select new ru.practicum.shareit.item.model.Booking (b.id , b.booker.id) "
-                                    + " from bookings b where b.item.owner.id=?1 and b.item.id=?2 "
-                                    + " and b.start <= current_timestamp order by b.start desc",
-                            Booking.class)
-                    .setParameter(1, userId).setParameter(2, itemId).setMaxResults(1).getSingleResult();
-        } catch (Exception e) {
-            return null;
-        }
-    }
-
-    Booking getNextBooking(Long userId, Long itemId) {
-        try {
-            return entityManager
-                    .createQuery(
-                            "select new ru.practicum.shareit.item.model.Booking (b.id , b.booker.id) "
-                                    + " from bookings b where b.item.owner.id=?1 and b.item.id=?2 "
-                                    + " and b.status like '%APPROVED%'"
-                                    + " and b.start > current_timestamp order by b.start asc",
-                            Booking.class)
-                    .setParameter(1, userId).setParameter(2, itemId).setMaxResults(1).getSingleResult();
-        } catch (Exception e) {
-            return null;
         }
     }
 }
