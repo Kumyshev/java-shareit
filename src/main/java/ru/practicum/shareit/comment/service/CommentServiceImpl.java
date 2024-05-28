@@ -6,7 +6,6 @@ import java.util.stream.Collectors;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -23,10 +22,8 @@ import ru.practicum.shareit.comment.repository.CommentRepository;
 @RequiredArgsConstructor
 public class CommentServiceImpl implements CommentService {
 
-    @Autowired
     private final CommentRepository commentRepository;
 
-    @Autowired
     private final CommentMapper commentMapper;
 
     @PersistenceContext

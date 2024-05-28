@@ -11,7 +11,6 @@ import ru.practicum.shareit.item.impl.ItemService;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -25,10 +24,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 @RequestMapping("/items")
 @RequiredArgsConstructor
 public class ItemController {
-    @Autowired
+
     private final ItemService itemService;
 
-    @Autowired
     private final CommentService commentService;
 
     @PostMapping

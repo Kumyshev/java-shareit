@@ -7,6 +7,7 @@ import java.util.stream.Stream;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
+import ru.practicum.shareit.Status;
 import ru.practicum.shareit.booking.exception.UnsupportedStatusException;
 
 public class StatusValidator implements ConstraintValidator<StatusConstraint, CharSequence> {
@@ -14,7 +15,7 @@ public class StatusValidator implements ConstraintValidator<StatusConstraint, Ch
 
     @Override
     public void initialize(StatusConstraint annotation) {
-        acceptedValues = Stream.of(annotation.enumClass().getEnumConstants())
+        acceptedValues = Stream.of(Status.values())
                 .map(Enum::name)
                 .collect(Collectors.toList());
     }
@@ -26,6 +27,6 @@ public class StatusValidator implements ConstraintValidator<StatusConstraint, Ch
         } else if (!acceptedValues.contains(value.toString()))
             throw new UnsupportedStatusException();
 
-        return acceptedValues.contains(value.toString());
+        return true;
     }
 }

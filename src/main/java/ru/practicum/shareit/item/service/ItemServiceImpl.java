@@ -8,7 +8,6 @@ import java.util.stream.Collectors;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -28,19 +27,16 @@ import ru.practicum.shareit.user.repository.UserRepository;
 @Service
 @RequiredArgsConstructor
 public class ItemServiceImpl implements ItemService {
-    @Autowired
+
     private final ItemRepository itemRepository;
 
-    @Autowired
     private final ItemMapper itemMapper;
 
-    @Autowired
     private final UserRepository userRepository;
 
     @PersistenceContext
     private EntityManager entityManager;
 
-    @Autowired
     private final CommentService commentService;
 
     @Override
