@@ -1,11 +1,9 @@
-package ru.practicum.shareit.booking;
+package ru.practicum.shareit.comment.model;
 
 import java.time.LocalDateTime;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -18,37 +16,32 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import ru.practicum.shareit.Status;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.User;
 
-@Entity(name = "bookings")
+@Entity(name = "comments")
 @Data
 @Builder
-@Table(name = "bookings")
+@Table(name = "comments")
 @AllArgsConstructor
 @NoArgsConstructor
-public class Booking {
+public class Comment {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "start_date", nullable = false)
-    private LocalDateTime start;
+    @Column(name = "text", nullable = false)
+    private String text;
 
-    @Column(name = "end_date", nullable = false)
-    private LocalDateTime end;
-
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "item_id", nullable = false)
     private Item item;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "booker_id", nullable = false)
-    private User booker;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "author_id", nullable = false)
+    private User author;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "status", nullable = false)
-    private Status status;
+    @Column(name = "created", nullable = false)
+    private LocalDateTime created;
 }
