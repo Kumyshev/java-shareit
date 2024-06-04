@@ -24,11 +24,12 @@ public class UserServiceImplTest {
 
     private final EntityManager em;
     private final UserService userService;
+    private UserDto userDto;
 
     @ParameterizedTest
     @CsvSource({ "Azamat, aza@yandex.ru" })
     void saveUserTest(String name, String email) {
-        UserDto userDto = UserDto.builder()
+        userDto = UserDto.builder()
                 .name(name)
                 .email(email)
                 .build();
