@@ -19,7 +19,7 @@ import static org.hamcrest.Matchers.*;
 
 @Transactional
 @SpringBootTest(properties = "db.name=test", webEnvironment = SpringBootTest.WebEnvironment.NONE)
-@RequiredArgsConstructor(onConstructor_ = @Autowired)
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class UserServiceImplTest {
 
     private final EntityManager em;
