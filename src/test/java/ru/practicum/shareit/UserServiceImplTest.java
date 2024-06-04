@@ -6,6 +6,7 @@ import javax.transaction.Transactional;
 
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -27,7 +28,7 @@ public class UserServiceImplTest {
 
     @ParameterizedTest
     @CsvSource({ "aza@yandex.ru, azamat" })
-    void saveUserTest(String email, String name) {
+    void saveUserTest(@Mock String email, @Mock String name) {
         UserDto userDto = new UserDto();
         userDto.setName(name);
         userDto.setEmail(email);
