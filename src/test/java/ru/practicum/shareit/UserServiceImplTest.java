@@ -6,6 +6,7 @@ import javax.transaction.Transactional;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -27,6 +28,7 @@ public class UserServiceImplTest {
     private final UserService userService;
 
     @ParameterizedTest
+    @CsvSource({"Azamat, aza@yandex.ru"})
     @Test
     void saveUserTest() {
         UserDto userDto = UserDto.builder()
