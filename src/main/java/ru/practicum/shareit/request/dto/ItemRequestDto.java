@@ -24,7 +24,7 @@ public class ItemRequestDto {
     @NotBlank(groups = Create.class)
     private String description;
 
-    private Long requestor_id;
+    private Long requestorId;
 
     private LocalDateTime created;
 

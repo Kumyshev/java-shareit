@@ -27,7 +27,7 @@ public class RequestMapper {
         ItemRequestDto itemRequestDto = ItemRequestDto.builder()
                 .id(itemRequest.getId())
                 .description(itemRequest.getDescription())
-                .requestor_id(itemRequest.getRequestor().getId())
+                .requestorId(itemRequest.getRequestor().getId())
                 .created(itemRequest.getCreated())
                 .items(dtos)
                 .build();
