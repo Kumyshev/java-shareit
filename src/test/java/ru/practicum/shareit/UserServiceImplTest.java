@@ -5,6 +5,7 @@ import javax.persistence.TypedQuery;
 import javax.transaction.Transactional;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -16,6 +17,7 @@ import ru.practicum.shareit.user.impl.UserService;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
+
 @Transactional
 @SpringBootTest(properties = "db.name=test", webEnvironment = SpringBootTest.WebEnvironment.NONE)
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
@@ -24,6 +26,7 @@ public class UserServiceImplTest {
     private final EntityManager em;
     private final UserService userService;
 
+    @ParameterizedTest
     @Test
     void saveUserTest() {
         UserDto userDto = UserDto.builder()
