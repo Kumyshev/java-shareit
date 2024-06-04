@@ -4,8 +4,8 @@ import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 import javax.transaction.Transactional;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -19,29 +19,27 @@ import static org.hamcrest.Matchers.*;
 
 @Transactional
 @SpringBootTest(properties = "db.name=test", webEnvironment = SpringBootTest.WebEnvironment.NONE)
-@RequiredArgsConstructor(onConstructor = @__(@Autowired))
+@RequiredArgsConstructor(onConstructor_ = @Autowired)
 public class UserServiceImplTest {
 
     private final EntityManager em;
     private final UserService userService;
-    private UserDto userDto;
 
-    @BeforeEach
-    public void setUp() {
-        userDto = UserDto.builder()
-                .name("Azamat")
-                .email("aza@yandex.ru")
+    @ParameterizedTest
+    @CsvSource({ "Azamat, aza@yandex.ru" })
+    void saveUserTest(String name, String email) {
+        UserDto userDto = UserDto.builder()
+                .name(name)
+                .email(email)
                 .build();
         userService.postUser(userDto);
-    }
-
-    @Test
-    void saveUserTest() {
 
         TypedQuery<User> query = em.createQuery("select u from users u where u.name = :name", User.class);
         User user = query.setParameter("name", userDto.getName()).getSingleResult();
 
         assertThat(user.getId(), notNullValue());
+        assertThat(user.getName(), equalTo(userDto.getName()));
+        assertThat(user.getEmail(), equalTo(userDto.getEmail()));
     }
 
 }
