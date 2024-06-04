@@ -26,7 +26,7 @@ public class UserServiceImplTest {
 
     @Test
     void saveUserTest() {
-        UserDto userDto = createUserDto();
+        UserDto userDto = createUserDto("aza@yandex.ru", "Azamat");
         userDto = userService.postUser(userDto);
 
         TypedQuery<User> query = em.createQuery("select u from users u where u.name = :name", User.class);
@@ -37,11 +37,11 @@ public class UserServiceImplTest {
         assertThat(user.getEmail(), equalTo(userDto.getEmail()));
     }
 
-    private UserDto createUserDto() {
-        return UserDto.builder()
-                .name("Azamat")
-                .email("aza@yandex.ru")
-                .build();
+    private UserDto createUserDto(String email, String name) {
+        UserDto userDto = new UserDto();
+        userDto.setName(name);
+        userDto.setEmail(email);
+        return userDto;
     }
 
 }
