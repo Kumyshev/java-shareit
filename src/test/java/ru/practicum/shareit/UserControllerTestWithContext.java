@@ -35,7 +35,7 @@ class UserControllerTestWithContext {
     private MockMvc mvc;
 
     private UserDto userDto = UserDto.builder()
-            .id(1l)
+            .id(1L)
             .name("update")
             .email("update@user.com").build();
 
