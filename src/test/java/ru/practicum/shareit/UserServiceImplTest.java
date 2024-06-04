@@ -4,7 +4,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 import javax.transaction.Transactional;
 
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +17,6 @@ import ru.practicum.shareit.user.impl.UserService;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
-
 @Transactional
 @SpringBootTest(properties = "db.name=test", webEnvironment = SpringBootTest.WebEnvironment.NONE)
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
@@ -28,12 +26,11 @@ public class UserServiceImplTest {
     private final UserService userService;
 
     @ParameterizedTest
-    @CsvSource({"Azamat, aza@yandex.ru"})
-    @Test
-    void saveUserTest() {
+    @CsvSource({ "Azamat, aza@yandex.ru" })
+    void saveUserTest(String name, String email) {
         UserDto userDto = UserDto.builder()
-                .name("Azamat")
-                .email("aza@yandex.ru")
+                .name(name)
+                .email(email)
                 .build();
         userService.postUser(userDto);
 
