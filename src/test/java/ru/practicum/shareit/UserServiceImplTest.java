@@ -23,15 +23,11 @@ public class UserServiceImplTest {
 
     private final EntityManager em;
     private final UserService userService;
-    private UserDto userDto;
 
     @Test
     void saveUserTest() {
-        userDto = UserDto.builder()
-                .name("Azamat")
-                .email("aza@yandex.ru")
-                .build();
-        userService.postUser(userDto);
+        UserDto userDto = createUserDto();
+        userDto = userService.postUser(userDto);
 
         TypedQuery<User> query = em.createQuery("select u from users u where u.name = :name", User.class);
         User user = query.setParameter("name", userDto.getName()).getSingleResult();
@@ -39,6 +35,13 @@ public class UserServiceImplTest {
         assertThat(user.getId(), notNullValue());
         assertThat(user.getName(), equalTo(userDto.getName()));
         assertThat(user.getEmail(), equalTo(userDto.getEmail()));
+    }
+
+    private UserDto createUserDto() {
+        return UserDto.builder()
+                .name("Azamat")
+                .email("aza@yandex.ru")
+                .build();
     }
 
 }
