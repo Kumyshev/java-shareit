@@ -11,18 +11,18 @@ import org.springframework.web.server.ResponseStatusException;
 import lombok.RequiredArgsConstructor;
 import ru.practicum.shareit.request.ItemRequest;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
-import ru.practicum.shareit.request.impl.RequestService;
-import ru.practicum.shareit.request.mapper.RequestMapper;
-import ru.practicum.shareit.request.repository.RequestRepository;
+import ru.practicum.shareit.request.impl.ItemRequestService;
+import ru.practicum.shareit.request.mapper.ItemRequestMapper;
+import ru.practicum.shareit.request.repository.ItemRequestRepository;
 import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.impl.UserService;
 
 @Service
 @RequiredArgsConstructor
-public class RequestServiceImpl implements RequestService {
+public class ItemRequestServiceImpl implements ItemRequestService {
 
-    private final RequestMapper requestMapper;
-    private final RequestRepository requestRepository;
+    private final ItemRequestMapper requestMapper;
+    private final ItemRequestRepository requestRepository;
 
     private final UserService userService;
 

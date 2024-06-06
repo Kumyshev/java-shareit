@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 
 import ru.practicum.shareit.request.ItemRequest;
 
-public interface RequestRepository extends JpaRepository<ItemRequest, Long> {
+public interface ItemRequestRepository extends JpaRepository<ItemRequest, Long> {
 
     public List<ItemRequest> findItemRequestsByRequestor_id(Long userId);
 

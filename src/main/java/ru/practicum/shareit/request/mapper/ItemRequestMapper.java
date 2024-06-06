@@ -13,7 +13,7 @@ import ru.practicum.shareit.request.dto.ItemRequestDto;
 
 @Component
 @RequiredArgsConstructor
-public class RequestMapper {
+public class ItemRequestMapper {
 
     private final ItemMapper itemMapper;
 
@@ -22,8 +22,9 @@ public class RequestMapper {
         if (itemRequest.getItemList() != null)
             dtos = itemRequest.getItemList()
                     .stream()
-                    .map(itemMapper::toItemDto)
+                    .map(itemMapper::toItemDto)//mapper
                     .collect(Collectors.toList());
+
         ItemRequestDto itemRequestDto = ItemRequestDto.builder()
                 .id(itemRequest.getId())
                 .description(itemRequest.getDescription())

@@ -5,7 +5,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
-import ru.practicum.shareit.request.impl.RequestService;
+import ru.practicum.shareit.request.impl.ItemRequestService;
 
 import java.util.List;
 
@@ -25,7 +25,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 @Validated
 public class ItemRequestController {
 
-    private final RequestService requestService;
+    private final ItemRequestService requestService;
 
     @PostMapping
     public ItemRequestDto postItemRequest(
