@@ -2,6 +2,8 @@ package ru.practicum.shareit.booking;
 
 import java.util.List;
 
+import javax.validation.constraints.Min;
+
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -46,22 +48,28 @@ public class BookingController {
         return bookingService.getBooking(userId, bookingId);
     }
 
+    @Validated
     @GetMapping
     public List<BookingDto> getUserBookings(
+            @RequestHeader(value = "X-Sharer-User-Id") Long userId,
             @RequestParam(required = false) @StatusConstraint(enumClass = Status.class) String state,
-            @RequestHeader(value = "X-Sharer-User-Id") Long userId) {
+            @RequestParam(required = false, name = "from") @Min(0) Integer from,
+            @RequestParam(required = false, name = "size") @Min(1) Integer size) {
         if (state != null && !state.equals("ALL"))
             return bookingService.getUserBookingsWithState(userId, state);
-        return bookingService.getUserBookings(userId);
+        return bookingService.getUserBookings(userId, from, size);
     }
 
+    @Validated
     @GetMapping("/owner")
     public List<BookingDto> getOwnerBookings(
+            @RequestHeader(value = "X-Sharer-User-Id") Long userId,
             @RequestParam(required = false) @StatusConstraint(enumClass = Status.class) String state,
-            @RequestHeader(value = "X-Sharer-User-Id") Long userId) {
+            @RequestParam(required = false, name = "from") @Min(0) Integer from,
+            @RequestParam(required = false, name = "size") @Min(1) Integer size) {
         if (state != null && !state.equals("ALL"))
             return bookingService.getOwnerBookingsWithState(userId, state);
-        return bookingService.getOwnerBookings(userId);
+        return bookingService.getOwnerBookings(userId, from, size);
     }
 
 }

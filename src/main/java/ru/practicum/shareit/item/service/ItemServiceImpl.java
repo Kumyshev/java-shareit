@@ -17,6 +17,8 @@ import ru.practicum.shareit.item.impl.ItemService;
 import ru.practicum.shareit.item.mapper.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.ItemRepository;
+import ru.practicum.shareit.request.ItemRequest;
+import ru.practicum.shareit.request.impl.ItemRequestService;
 import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 
@@ -32,12 +34,18 @@ public class ItemServiceImpl implements ItemService {
 
     private final CommentService commentService;
 
+    private final ItemRequestService requestService;
+
     @Override
     public ItemDto postItem(ItemDto itemDto, Long ownerId) {
+        ItemRequest itemRequest = null;
+        if (itemDto.getRequestId() != null)
+            itemRequest = requestService.findRequest(itemDto.getRequestId());
         try {
             Item item = itemMapper.toItem(itemDto);
             Optional<User> user = userRepository.findById(ownerId);
             item.setOwner(user.get());
+            item.setRequest(itemRequest);
             return itemMapper.toItemDto(itemRepository.save(item));
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
@@ -64,7 +72,6 @@ public class ItemServiceImpl implements ItemService {
             itemDto.setLastBooking(itemRepository.findLastBooking(userId, itemId));
             itemDto.setNextBooking(itemRepository.findNextBooking(userId, itemId));
             itemDto.setComments(data);
-            ;
             return itemDto;
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);

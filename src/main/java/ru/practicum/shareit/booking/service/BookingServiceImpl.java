@@ -73,22 +73,33 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public List<BookingDto> getUserBookings(Long userId) {
+    public List<BookingDto> getUserBookings(Long userId, Integer from, Integer size) {
         List<Booking> bookings = bookingRepository.findUserBookings(userId)
                 .filter(b -> !b.isEmpty())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-
+        if (from != null)
+            return bookings.stream()
+                    .map(bookingMapper::toBookingDto)
+                    .skip(from)
+                    .limit(size)
+                    .collect(Collectors.toList());
         return bookings.stream()
                 .map(bookingMapper::toBookingDto)
                 .collect(Collectors.toList());
     }
 
     @Override
-    public List<BookingDto> getOwnerBookings(Long ownerId) {
+    public List<BookingDto> getOwnerBookings(Long ownerId, Integer from, Integer size) {
         List<Booking> bookings = bookingRepository.findOwnerBookings(ownerId)
                 .filter(b -> !b.isEmpty())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
+        if (from != null)
+            return bookings.stream()
+                    .map(bookingMapper::toBookingDto)
+                    .skip(from)
+                    .limit(size)
+                    .collect(Collectors.toList());
         return bookings.stream()
                 .map(bookingMapper::toBookingDto)
                 .collect(Collectors.toList());

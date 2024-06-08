@@ -12,16 +12,21 @@ public class ItemMapper {
         return Item.builder()
                 .name(itemDto.getName())
                 .description(itemDto.getDescription())
-                .available(itemDto.getAvailable()).build();
+                .available(itemDto.getAvailable())
+                .build();
     }
 
     public ItemDto toItemDto(Item item) {
-        return ItemDto.builder()
+        ItemDto itemDto = ItemDto.builder()
                 .id(item.getId())
                 .name(item.getName())
                 .description(item.getDescription())
                 .available(item.getAvailable())
-                .owner(item.getOwner()).build();
+                .owner(item.getOwner())
+                .build();
+        if (item.getRequest() != null)
+            itemDto.setRequestId(item.getRequest().getId());
+        return itemDto;
     }
 
     public Item toUpdateItem(Item item, ItemDto itemDto) {
