@@ -1,7 +1,5 @@
 package ru.practicum.shareit.request.controller;
 
-import java.util.List;
-
 import javax.validation.constraints.Min;
 
 import org.springframework.http.ResponseEntity;
@@ -16,13 +14,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
 
 @Controller
 @RequestMapping(path = "/requests")
 @RequiredArgsConstructor
-@Slf4j
 @Validated
 public class RequestController {
     private final RequestClient requestClient;

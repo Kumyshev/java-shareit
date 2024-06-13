@@ -1,7 +1,5 @@
 package ru.practicum.shareit.item.controller;
 
-import java.util.List;
-
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
@@ -15,14 +13,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import ru.practicum.shareit.comment.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 
 @Controller
 @RequestMapping(path = "/items")
 @RequiredArgsConstructor
-@Slf4j
 @Validated
 public class ItemController {
     private final ItemClient itemClient;
