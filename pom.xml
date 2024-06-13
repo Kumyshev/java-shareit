@@ -21,7 +21,7 @@
 	<name>ShareIt</name>
 
 	<properties>
-		<java.version>9</java.version>
+		<java.version>11</java.version>
 	</properties>
 
 	<build>
