@@ -14,9 +14,7 @@ public class StatusValidator implements ConstraintValidator<StatusConstraint, Ch
 
     @Override
     public boolean isValid(CharSequence value, ConstraintValidatorContext context) {
-        if (value == null) {
-            return true;
-        } else if ("UNSUPPORTED_STATUS".equals(value.toString()))
+        if (value != null && "UNSUPPORTED_STATUS".equals(value.toString()))
             throw new UnsupportedStatusException();
 
         return true;
